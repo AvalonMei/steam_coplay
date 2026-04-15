@@ -1,0 +1,57 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:          #1b2838;
+  --surface:     #2a475e;
+  --surface-2:   #1e3448;
+  --card:        #16202d;
+  --card-hover:  #1e2d3d;
+  --border:      #2d4a6e;
+  --text:        #c6d4df;
+  --text-muted:  #7a8fa6;
+  --accent:      #66c0f4;
+  --accent-dim:  #1a4a6e;
+  --green:       #4db35c;
+  --rank-gold:   #f0c040;
+  --rank-silver: #a0b0c0;
+  --rank-bronze: #c87020;
+  --radius:      8px;
+  --transition:  0.15s ease;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ── Spinner ────────────────────────────────────────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

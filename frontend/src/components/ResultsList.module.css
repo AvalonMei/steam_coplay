@@ -1,0 +1,48 @@
+.section {
+  animation: fadeIn 0.3s ease;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.count {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.empty {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px 24px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.emptyTitle {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.emptyHint {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
