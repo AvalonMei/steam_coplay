@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import styles from './PlayerInput.module.css';
 
-const DEBOUNCE_MS = 500;
+const DEBOUNCE_MS = 800;
 
 export default function PlayerInput({ label, disabled, onResolve, onRawChange, rawValue }) {
   const [raw, setRaw] = useState(rawValue ?? '');

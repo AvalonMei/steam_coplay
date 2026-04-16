@@ -1,19 +1,22 @@
 // Real API response shapes confirmed against the Steam Web API.
 // include_played_free_games=1 is required — without it free-to-play games
 // (e.g. PUBG, CS2) are silently omitted even when the player has hundreds of hours.
-// Profiles used for integration testing:
-//   P1: steamcommunity.com/id/504316002  → Steam64 76561198368877318  (public, 117 games incl. F2P)
-//   P2: steamcommunity.com/id/PhaNtazM1337 → Steam64 76561198954620186 (public, 45 games incl. F2P)
+//
+// Integration test profiles are configured via environment variables so real
+// Steam IDs are never stored in the repository:
+//   TEST_P1_VANITY / TEST_P1_STEAM_ID  — public profile, large library
+//   TEST_P2_VANITY / TEST_P2_STEAM_ID  — public profile, smaller library
+//   TEST_PRIVATE_VANITY / TEST_PRIVATE_STEAM_ID — private profile
 
-const P1_VANITY = '504316002';
-const P1_STEAM_ID = '76561198368877318';
+const P1_VANITY    = process.env.TEST_P1_VANITY      || 'player_one';
+const P1_STEAM_ID  = process.env.TEST_P1_STEAM_ID    || '76561198000000001';
 
-const P2_VANITY = 'PhaNtazM1337';
-const P2_STEAM_ID = '76561198954620186';
+const P2_VANITY    = process.env.TEST_P2_VANITY      || 'player_two';
+const P2_STEAM_ID  = process.env.TEST_P2_STEAM_ID    || '76561198000000002';
 
-// steamcommunity.com/id/mikuchankawaii — private profile, cannot fetch library
-const PRIVATE_VANITY = 'mikuchankawaii';
-const PRIVATE_STEAM_ID = '76561198871256866';
+// Private profile — GetOwnedGames returns empty response
+const PRIVATE_VANITY    = process.env.TEST_PRIVATE_VANITY    || 'hidden_player';
+const PRIVATE_STEAM_ID  = process.env.TEST_PRIVATE_STEAM_ID  || '76561198000000003';
 
 // --- ResolveVanityURL response shapes ---
 

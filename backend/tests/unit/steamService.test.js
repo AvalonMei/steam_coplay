@@ -12,6 +12,7 @@ const {
   P1_STEAM_ID,
   P2_VANITY,
   P2_STEAM_ID,
+  PRIVATE_STEAM_ID,
   RESOLVE_VANITY_SUCCESS,
   RESOLVE_VANITY_NOT_FOUND,
   GET_OWNED_GAMES_P1,
@@ -110,18 +111,18 @@ describe('getOwnedGames', () => {
 
   it('throws a private-profile error when response.games is absent', async () => {
     axios.get.mockResolvedValueOnce({ data: GET_OWNED_GAMES_PRIVATE });
-    await expect(getOwnedGames('76561198871256866')).rejects.toThrow(/private/i);
+    await expect(getOwnedGames(PRIVATE_STEAM_ID)).rejects.toThrow(/private/i);
   });
 });
 
 // ─── resolveUser ────────────────────────────────────────────────────────────
 // resolveUser(input) accepts any of:
-//   - Full URL:  https://steamcommunity.com/id/PhaNtazM1337/
-//   - Full URL:  https://steamcommunity.com/profiles/76561198954620186
-//   - Path only: /id/PhaNtazM1337
-//   - Path only: /profiles/76561198954620186
-//   - Raw Steam64 ID: 76561198954620186
-//   - Raw vanity name: PhaNtazM1337 or 504316002
+//   - Full URL:  https://steamcommunity.com/id/player_two/
+//   - Full URL:  https://steamcommunity.com/profiles/76561198000000002
+//   - Path only: /id/player_two
+//   - Path only: /profiles/76561198000000002
+//   - Raw Steam64 ID: 76561198000000002
+//   - Raw vanity name: player_two or player_one
 // It returns the Steam64 ID string, resolving via the API when necessary.
 
 describe('resolveUser', () => {

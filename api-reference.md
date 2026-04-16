@@ -125,7 +125,7 @@ curl -X GET \
 ```bash
 GET https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/
   ?key=STEAM_API_KEY
-  &vanityurl=mikuchankawaii
+  &vanityurl=some_vanity_name
 ```
 
 ### Success response
@@ -133,7 +133,7 @@ GET https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/
 ```json
 {
   "response": {
-    "steamid": "76561198871256866",
+    "steamid": "76561198XXXXXXXXX",
     "success": 1
   }
 }
@@ -154,15 +154,12 @@ GET https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/
 
 - `success: 1` = resolved OK; `success: 42` = vanity name not found
 - `steamid` is returned as a **string** (64-bit int too large for JSON number)
-- Numeric vanity URLs like `504316002` (from `/id/504316002/`) resolve fine
-- `/profiles/76561198368877318` URLs already contain the Steam64 ID — no API call needed
+- Numeric vanity URLs (from `/id/XXXXXXXXX/`) resolve fine
+- `/profiles/<Steam64ID>` URLs already contain the Steam64 ID — no API call needed
 
-### Test profiles (confirmed)
+### Test profiles
 
-| Vanity URL | Steam64 ID | Notes |
-|---|---|---|
-| `504316002` | `76561198368877318` | Public library, 111 games, 62 with ≥30 min |
-| `mikuchankawaii` | `76561198871256866` | **Private profile** — library hidden |
+Configure via env vars `TEST_P1_VANITY`, `TEST_P1_STEAM_ID`, `TEST_P2_VANITY`, `TEST_P2_STEAM_ID`, `TEST_PRIVATE_VANITY`, `TEST_PRIVATE_STEAM_ID` — see `backend/tests/fixtures/steamFixtures.js`.
 
 ---
 
@@ -171,7 +168,7 @@ GET https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/
 ```bash
 GET https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/
   ?key=STEAM_API_KEY
-  &steamid=76561198368877318
+  &steamid=<Steam64ID>
   &include_appinfo=1
 ```
 

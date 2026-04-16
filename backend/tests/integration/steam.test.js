@@ -25,12 +25,12 @@ const {
 // ─── ResolveVanityURL ────────────────────────────────────────────────────────
 
 describe('[integration] resolveVanityURL', () => {
-  it('resolves 504316002 → 76561198368877318', async () => {
+  it('resolves P1 vanity → P1 Steam64 ID', async () => {
     const id = await resolveVanityURL(P1_VANITY);
     expect(id).toBe(P1_STEAM_ID);
   });
 
-  it('resolves PhaNtazM1337 → 76561198954620186', async () => {
+  it('resolves P2 vanity → P2 Steam64 ID', async () => {
     const id = await resolveVanityURL(P2_VANITY);
     expect(id).toBe(P2_STEAM_ID);
   });
@@ -45,7 +45,7 @@ describe('[integration] resolveVanityURL', () => {
 // ─── GetOwnedGames ───────────────────────────────────────────────────────────
 
 describe('[integration] getOwnedGames', () => {
-  it('returns games for P1 (504316002 — public profile)', async () => {
+  it('returns games for P1 (public profile)', async () => {
     const games = await getOwnedGames(P1_STEAM_ID);
     expect(games.length).toBeGreaterThan(0);
     // All returned games must meet the >=30 min threshold
@@ -64,7 +64,7 @@ describe('[integration] getOwnedGames', () => {
     expect(games.find((g) => g.appid === 730)).toBeDefined();
   });
 
-  it('returns games for P2 (PhaNtazM1337 — public profile)', async () => {
+  it('returns games for P2 (public profile)', async () => {
     const games = await getOwnedGames(P2_STEAM_ID);
     expect(games.length).toBeGreaterThan(0);
   });
@@ -85,7 +85,7 @@ describe('[integration] getOwnedGames', () => {
     }
   });
 
-  it('throws a private-profile error for the private profile (mikuchankawaii)', async () => {
+  it('throws a private-profile error for a private profile', async () => {
     await expect(getOwnedGames(PRIVATE_STEAM_ID)).rejects.toThrow(/private/i);
   });
 });

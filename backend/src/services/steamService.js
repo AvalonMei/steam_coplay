@@ -9,12 +9,12 @@ function getApiKey() {
 }
 
 // Accepts any of:
-//   https://steamcommunity.com/profiles/76561198368877318
-//   https://steamcommunity.com/id/PhaNtazM1337/
-//   /profiles/76561198368877318
-//   /id/504316002
-//   76561198368877318   (bare Steam64 ID — 17 digits starting with 765611)
-//   PhaNtazM1337        (bare vanity name)
+//   https://steamcommunity.com/profiles/<Steam64ID>
+//   https://steamcommunity.com/id/<vanityname>/
+//   /profiles/<Steam64ID>
+//   /id/<vanityname>
+//   <Steam64ID>   (bare 17-digit ID)
+//   <vanityname>  (bare vanity slug)
 function parseInput(input) {
   const trimmed = input.trim().replace(/\/+$/, '');
 

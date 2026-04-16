@@ -6,9 +6,24 @@ const axios = require('axios');
 
 const SEARCH_URL = 'https://steamcommunity.com/search/SearchCommunityAjax';
 const SESSION_URL = 'https://steamcommunity.com/search/users/';
+const CACHE_TTL_MS = 2 * 60 * 1000; // cache results for 2 minutes
 
 // Cached anonymous session cookie. Long-lived (weeks), refreshed on failure.
 let cachedCookie = null;
+
+// Simple in-memory result cache: query (lowercased) → { results, expiresAt }
+const resultCache = new Map();
+
+function getCached(query) {
+  const entry = resultCache.get(query.toLowerCase());
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) { resultCache.delete(query.toLowerCase()); return null; }
+  return entry.results;
+}
+
+function setCache(query, results) {
+  resultCache.set(query.toLowerCase(), { results, expiresAt: Date.now() + CACHE_TTL_MS });
+}
 
 async function getCommunitySession() {
   if (cachedCookie) return cachedCookie;
@@ -26,9 +41,15 @@ async function getCommunitySession() {
   return cachedCookie;
 }
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 // Searches Steam community by display name or vanity URL.
-// Returns up to 5 candidates: { steamId, personaname, avatar, profileUrl }
-async function searchUsers(query, { retry = true } = {}) {
+// Returns candidates: { steamId, personaname, avatar, profileUrl }
+async function searchUsers(query, { retrySession = true, retryRate = true } = {}) {
+  // Return cached result if fresh
+  const cached = getCached(query);
+  if (cached) return cached;
+
   const cookie = await getCommunitySession();
   const sessionid = cookie.split('=')[1];
 
@@ -48,20 +69,27 @@ async function searchUsers(query, { retry = true } = {}) {
       }
     );
   } catch (err) {
-    if (retry) {
+    // Rate-limited — back off and retry once
+    if (err.response?.status === 429 && retryRate) {
+      const retryAfter = parseInt(err.response.headers['retry-after'] || '2', 10);
+      await sleep(retryAfter * 1000);
+      return searchUsers(query, { retrySession, retryRate: false });
+    }
+    // Session-related error — refresh cookie and retry once
+    if (retrySession) {
       cachedCookie = null;
-      return searchUsers(query, { retry: false });
+      return searchUsers(query, { retrySession: false, retryRate });
     }
     throw err;
   }
 
   const { success, html } = res.data;
 
-  // Empty array response means the session expired — refresh and retry once
+  // Empty/falsy response means the session expired — refresh and retry once
   if (!success || !html) {
-    if (retry) {
+    if (retrySession) {
       cachedCookie = null;
-      return searchUsers(query, { retry: false });
+      return searchUsers(query, { retrySession: false, retryRate });
     }
     return [];
   }
@@ -69,11 +97,12 @@ async function searchUsers(query, { retry = true } = {}) {
   // Extract miniprofile IDs from the HTML.
   // Steam64 = 76561197960265728 + accountId (lower 32 bits)
   const miniprofileIds = [...html.matchAll(/data-miniprofile="(\d+)"/g)].map((m) => m[1]);
-  if (miniprofileIds.length === 0) return [];
+  if (miniprofileIds.length === 0) {
+    setCache(query, []);
+    return [];
+  }
 
-  const steamIds = miniprofileIds
-    .slice(0, 5)
-    .map((id) => String(76561197960265728n + BigInt(id)));
+  const steamIds = miniprofileIds.map((id) => String(76561197960265728n + BigInt(id)));
 
   // Fetch full profile data (name + avatar) from the Steam Web API
   const summaryRes = await axios.get(
@@ -88,7 +117,7 @@ async function searchUsers(query, { retry = true } = {}) {
   const byId = Object.fromEntries(
     summaryRes.data.response.players.map((p) => [p.steamid, p])
   );
-  return steamIds
+  const results = steamIds
     .map((id) => byId[id])
     .filter(Boolean)
     .map((p) => ({
@@ -97,6 +126,9 @@ async function searchUsers(query, { retry = true } = {}) {
       avatar: p.avatarmedium,
       profileUrl: p.profileurl,
     }));
+
+  setCache(query, results);
+  return results;
 }
 
 module.exports = { searchUsers };

@@ -9,8 +9,8 @@
  *   npm run test:integration
  *
  * Profiles:
- *   P1: steamcommunity.com/id/504316002  (public)
- *   P2: steamcommunity.com/id/PhaNtazM1337 (public)
+ *   Profiles are configured via TEST_P1_VANITY / TEST_P2_VANITY env vars.
+ *   See backend/tests/fixtures/steamFixtures.js for details.
  */
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
